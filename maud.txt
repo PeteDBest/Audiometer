@@ -1,0 +1,50 @@
+MAUD functions
+
+*
+* open two devices for simultaneous play/record
+*
+maud_action("open",odevice=0,idevice=0,samprate=44100,numchannels=1,bufftime=5)
+*
+* close devices
+*
+maud_action("close")
+*
+* start simultaneous play/record
+*
+maud_action("start")
+*
+* pause simultaneous play/record
+*
+maud_action("pause")
+*
+* add a buffer of data to the replay queue
+*
+maud_action("play",audio,numsamp=-1)
+*
+* reset queues to zero
+*
+*   queue=1 output queue
+*   queue=2 input queue
+*   queue=3 both queues
+*
+maud_action("reset",queue)
+*
+* collect data recorded since last reset
+*
+audio=maud_action("collect")
+*
+* get status of various parameters
+*
+*   param="output"	value=size of output queue
+*   param="input"	value=size of input queue
+*
+value=maud_action("status",param)
+*
+* sleep until various things happen
+*
+*   param="input" value=size	wait until input queue is >= size
+*   param="output" value=size	wait until output queue is  <= size
+*   param="drain"	wait until output drains (param="output" value=0)
+*   param="fill"	wait until input queue full (param="input" value=buffsize-1)
+*
+maud_action("wait",param,value)
