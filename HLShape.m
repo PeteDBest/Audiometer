@@ -1,5 +1,5 @@
-function y = HLShape(frm, fs);
-%function y = HLShape(frm, fs);
+function y = HLShape(frm, hp, fs);
+%function y = HLShape(frm, hp, fs);
 % 
 % generates windowed sinc filter with a HL shaped spectrum
 % 
@@ -7,23 +7,28 @@ function y = HLShape(frm, fs);
 %  y     = filter kernel
 %
 %  frm   = # of points in filter kernel (default = 1024 points)
+%  hp    = headphone   {default 'HDA200', 'HDA300', 'TDH39', 'DT48'}
 %  fs    = sample frequency             (default = 44100)            
-hp = 'hd';
-
-if nargin  < 2, fs    = 44100        ; end;
+if nargin  < 3, fs    = 44100        ; end;
+if nargin  < 2, hp    = 'HDA200'     ; end;
 if nargin  < 1, frm   =  1024        ; end;
 
 hfm  = floor(frm/2);              % frequencies in each bin 
 freq = fs/frm*(1:hfm);            %  of correction filter
 
-switch hp
-case {'hd'}
+switch lower(hp)
+case {'hda300'}
+ lopa = 16e3;
+%  d1l = load('HDA300RefFreqRes.txt');
+ d1l = load('HDA300L1396106540.txt');
+ d1l(:,2) = d1l(:,2);
+case {'hda200'}
  lopa = 16e3;
  d1l  = load('HDA200R.txt');        % HDA200 frequency response
-case {'td'}
+case {'tdh39'}
  lopa = 8e3;
  d1l  = load('TDH39Pc313539.txt');
-case {'dt'}
+case {'dt48'}
  lopa = 8e3;
  d1l  = load('DT481LTD.txt');
 end

@@ -1,4 +1,5 @@
 % PlaySound.m
+ControlOff;
 set(handles.IsPlayPanel, 'Background', [1,0,0]);
 pause(0.01);                % give time to update screen
 
@@ -25,7 +26,7 @@ if handles.AttnChange == 1; % attenuator was changed
  end;
  handles.AttnChange = 0;   % attenuation is updated
  temp = 10*log10(mean(dB2amp(handles.S.wave,attn).^2));
- fprintf('Current level equals %2.0f dB\n', temp);
+ fprintf('Current level equals %2.0f dB FS\n', temp);
 end;
 
 trial = zeros(ceil(.025*handles.fs), 8);
@@ -35,3 +36,4 @@ maud_action('wait','output');
 
 pause(0.01);                % give  time to update screen
 set(handles.IsPlayPanel, 'Background', [0,1,0]);
+ControlOn;

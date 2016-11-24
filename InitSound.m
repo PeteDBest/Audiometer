@@ -1,4 +1,5 @@
 %InitSound.m
+handles.S.HeadPhones = handles.HeadPhones;
 handles.S.fs        = handles.fs;          % sample frequency            [Hz]
 handles.S.freq      =              ...     % frequency
 handles.freq(handles.CurFreqItem);

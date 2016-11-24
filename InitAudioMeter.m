@@ -34,16 +34,19 @@ maud_action('open',             ...
             handles.fs,         ...
             8,                  ...
             5);
+handles.HeadPhones  = 'HDA200';
 InitLevel           = 40;                % initial ouput level
 handles.HearThres   = InitLevel.*                  ... % initialise threshold
                       ones(2,length(handles.freq));    % matrix
 
-handles.cal         = -117;               % calibration factor for HDA200
-% handles.cal         = -134;               % calibration factor for TDH39
+
 
 i=1;
-while i<=nargin-3;             % pass arguments to corresponding variables
+while i<=MyNargin-3;             % pass arguments to corresponding variables
  switch lower(varargin{i})
+  case { 'headphones' }
+   i = i + 1;
+   handles.HeadPhones = varargin{i};
   case {'thresh'}
    i = i + 1;
    handles.HearThres  = varargin{i};
@@ -57,6 +60,14 @@ while i<=nargin-3;             % pass arguments to corresponding variables
  i = i + 1;
 end;
 
+switch handles.HeadPhones
+case {'HDA300'}
+ handles.cal         = -123;               % calibration factor for HDA300
+case {'HDA200'}
+ handles.cal         = -117;               % calibration factor for HDA200
+case {'TDH39'}
+ handles.cal         = -134;               % calibration factor for TDH39
+end
 
 
 

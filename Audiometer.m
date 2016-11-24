@@ -22,7 +22,7 @@ function varargout = Audiometer(varargin)
 
 % Edit the above text to modify the response to help Audiometer
 
-% Last Modified by GUIDE v2.5 23-Jan-2015 17:47:30
+% Last Modified by GUIDE v2.5 22-Nov-2016 15:05:25
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -51,6 +51,8 @@ function Audiometer_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to Audiometer (see VARARGIN)
+MyNargin= nargin;
+
 InitAudioMeter;                 % initialize audiometer
 guidata(hObject, handles);
 
@@ -174,6 +176,9 @@ function VolumeSlider_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 CurrentLevel = get(handles.VolumeSlider, 'value');
 UpdateVolumeSlider;
+set(hObject, 'Enable', 'off'); % DIRTY TRICK 
+drawnow;                       % prevent slider from focus such that
+set(hObject, 'Enable', 'on');  % arrow up down keys are deactivated
 guidata(hObject, handles);
 
 % Hints: get(hObject,'Value') returns position of slider
@@ -202,7 +207,7 @@ if handles.WaitRespons,     % only accept keyboard input when not playing
   guidata(hObject, handles);
   Key = eventdata.Key;
   switch Key
-  case {'numpad0'}
+  case {'numpad0', 'p', 'return'}
    PlaySound;
   case {'uparrow'}
    CurrentLevel = get(handles.VolumeSlider, 'value') + 5;
@@ -229,13 +234,13 @@ if handles.WaitRespons,     % only accept keyboard input when not playing
   case {'pageup'}
    set(handles.LeftEar,  'value', 1);
    set(handles.RightEar, 'value', 0);
-   InitSound;
-   handles.AttnChange = 1;                  % flag signal change
+   handles.Ear = 1;
+   EarChange;
   case {'pagedown'}
    set(handles.LeftEar,  'value', 0);
    set(handles.RightEar, 'value', 1);
-   InitSound;
-   handles.AttnChange = 1;                  % flag signal change
+   handles.Ear = 2;
+   EarChange;
   end;
   handles.WaitRespons = 1;  % switch to 'NotPlaying' state
 end; 
@@ -248,8 +253,8 @@ function LeftEar_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 set(handles.LeftEar,  'value', 1);
 set(handles.RightEar, 'value', 0);
-InitSound;
-handles.AttnChange = 1;                  % flag signal change
+handles.Ear = 1;
+EarChange;
 guidata(hObject, handles);
 % Hint: get(hObject,'Value') returns toggle state of LeftEar
 
@@ -261,12 +266,10 @@ function RightEar_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 set(handles.LeftEar,  'value', 0);
 set(handles.RightEar, 'value', 1);
-InitSound;
-handles.AttnChange = 1;                  % flag signal change
+handles.Ear = 2;
+EarChange;
 guidata(hObject, handles);
 % Hint: get(hObject,'Value') returns toggle state of RightEar
-
-
 
 
 % --- Executes on button press in PlayButton.
@@ -287,7 +290,24 @@ function ResetButton_Callback(hObject, eventdata, handles)
 % hObject    handle to ResetButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+InitLevel           = 40;                % initial ouput level
+handles.HearThres   = InitLevel.*                  ... % initialise threshold
+                      ones(2,length(handles.freq));    % matrix
+handles.CurFreqItem = 4;                 % currently selected radio button
 
+
+InitEar;                                 % initialize ear settings
+InitSound;                               % initialize probe sound
+InitVolumeControl;                       % initialize volume settings                                             
+
+SetFreq;                                 % supply frequency selector with frequencies
+SetCurFreq;                              % set radio button for frequency
+
+PlotAudiogram;
+
+SetHighFreqOff;                          % disable high frequency audiometry
+handles.WaitRespons = 1;                 % enable play button
+guidata(hObject, handles);
 
 % --- Executes on button press in ExitButton.
 function ExitButton_Callback(hObject, eventdata, handles)

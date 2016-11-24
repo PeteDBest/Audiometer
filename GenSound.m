@@ -6,16 +6,19 @@ function [Signal, WaveNorm] = GenSound(S);
 %  Signal   = mono signal at 0 dB HL in <-1..1> range
 %  WaveNorm = normalization to get signal at required level
 %  
-%  S        = structure with signal information
-%  .fs      = sampling rate                [Hz]
-%  .freq    = frequency of the signal      [Hz]
-%  .t       = duration of signal            [s]
-%  .Atck    = duration of fade in and out   [s]
+%  S            = structure with signal information
+%  .fs          = sampling rate                [Hz]
+%  .freq        = frequency of the signal      [Hz]
+%  .t           = duration of signal            [s]
+%  .Atck        = duration of fade in and out   [s]
+%  .HeadPhones  = headphone type {'HDA200', 'HDA300', 'TDH39', 'DT48'}
 
 frm = 4096;                           % filter size (# of points);
 
 tio = 2*frm./S.fs;                    % maximal filter ringing 
-y      = HLShape(frm, S.fs);          % filter with HL spectrum
+y      = HLShape(frm,           ...   % filter with HL spectrum
+                 S.HeadPhones,  ...
+                 S.fs); 
 x      = GenSine(S.t + tio,     ...   % generate signal within [-1..1] range
                  S.freq,        ...
                  S.fs);
